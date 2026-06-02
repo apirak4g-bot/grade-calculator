@@ -4,6 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        // ทำการ Redirect อัตโนมัติเมื่อเข้าใช้งานผ่านหน้า GitHub Pages ไปยัง URL ของ Google Web App
+        // วิธีนี้จะช่วยป้องกันปัญหาหน้าต่างซ้อนกัน (Nested Iframe) และป้องกันปัญหาระบบเข้าสู่ระบบด้วย Google ทำงานไม่ได้ใน iframe
+        const isGAS = typeof google !== 'undefined';
+        if (!isGAS && window.location.hostname.includes('github.io')) {
+            window.location.href = "https://script.google.com/a/macros/rmutsvmail.com/s/AKfycbxNWIGlt1aLJEC01-G2K715hoyFJyHv0t0BoPOKCWdoFIimsYOvCkspZ2aFyr0tnDCtHQ/exec";
+        }
+    </script>
     <title>Grade Calculator System</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -3211,9 +3219,6 @@
             if (academicTerms.length === 0) {
                 container.innerHTML = `
                     <div style="text-align:center; padding:4rem 2rem; color:var(--text-light); background:white; border-radius:16px; border:2px dashed #E2E8F0; margin-top: 1rem; transition: all 0.3s ease;">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#A0AEC0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem;">
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                        </svg>
                         <div style="font-size: 1.25rem; font-weight: 700; color: var(--navy); margin-bottom: 0.5rem;">มาเริ่มวางแผนการเรียนกันเถอะ!</div>
                         <div style="font-size: 0.95rem; margin-bottom: 1.5rem;">คุณสามารถเพิ่มเทอมเอง หรือใช้ตัวช่วยดึงแผนการเรียนแบบอัตโนมัติก็ได้</div>
                         <button class="btn btn-primary" onclick="openStudyModal()" style="padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(49, 130, 206, 0.2); width: auto; display: inline-flex;">
@@ -5428,53 +5433,6 @@
                 proceedLogin();
             }
         });
-    </script>
-
-    <!-- 📌 ตัวกรอบดึงหน้าจอคำนวณเกรดมาแสดงผลในหน้าเดียวกัน -->
-    <div id="gasIframeContainer" style="width: 100%; height: 100vh; margin-top: 20px;">
-        <iframe
-            src="https://script.google.com/a/macros/rmutsvmail.com/s/AKfycbxNWIGlt1aLJEC01-G2K715hoyFJyHv0t0BoPOKCWdoFIimsYOvCkspZ2aFyr0tnDCtHQ/exec"
-            style="width: 100%; height: 100%; border: none;" allow="camera"></iframe>
-    </div>
-
-    <script>
-        // ตรวจสอบสถานะการรัน: อยู่ใน iframe หรืออยู่ในสภาพแวดล้อม Google Apps Script (GAS) หรือไม่
-        const isIframe = window.self !== window.top;
-        const isGAS = typeof google !== 'undefined';
-
-        if (isIframe || isGAS) {
-            // 1. ถ้าตัวแอปถูกเรียกใช้งานในฐานะ iframe (ใน GitHub Pages) หรือรันตรงๆ บน Google Apps Script
-            // ให้ทำการลบแท็ก iframe ตัวล่างสุดทิ้งไป เพื่อป้องกันการแสดงผลซ้อนกันและการวนลูปแบบไม่สิ้นสุด (Infinite Recursion)
-            const iframeContainer = document.getElementById('gasIframeContainer');
-            if (iframeContainer) {
-                iframeContainer.remove();
-            }
-        } else {
-            // 2. ถ้าเปิดไฟล์นี้ตรงๆ ผ่าน GitHub Pages (หรือเครื่องตัวเองที่เป็นหน้าหลัก)
-            // ให้ซ่อน UI ส่วนอื่นทั้งหมดของไฟล์นี้ และเปิดแสดงผลเฉพาะ iframe ของ Google Apps Script แบบเต็มจอ
-            // วิธีนี้จะทำให้หน้าเว็บ GitHub Pages ทำงานร่วมกับระบบฐานข้อมูล Google Sheets ได้ 100% ผ่าน iframe หน้าเดียวอย่างสวยงาม
-            document.querySelectorAll('body > *:not(#gasIframeContainer)').forEach(el => {
-                if (el.id !== 'loadingOverlay') {
-                    el.style.display = 'none';
-                }
-            });
-
-            // ปรับแต่งหน้าหลักให้ iframe แสดงผลแบบ Fullscreen
-            document.body.style.padding = '0';
-            document.body.style.margin = '0';
-            document.body.style.overflow = 'hidden';
-
-            const iframeContainer = document.getElementById('gasIframeContainer');
-            if (iframeContainer) {
-                iframeContainer.style.marginTop = '0';
-                iframeContainer.style.width = '100vw';
-                iframeContainer.style.height = '100vh';
-                iframeContainer.style.position = 'fixed';
-                iframeContainer.style.top = '0';
-                iframeContainer.style.left = '0';
-                iframeContainer.style.zIndex = '99999';
-            }
-        }
     </script>
 </body>
 
